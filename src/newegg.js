@@ -102,3 +102,21 @@ class NewEgg extends SiteBase {
 }
 
 module.exports = NewEgg;
+
+//investigate https://www.newegg.ca/product/api/ProductRealtime?ItemNumber=19-113-666
+
+// interesting
+/**
+ * decodeURIComponent(JSON.parse(document.cookie.split(';')
+ .map(v => v.split('='))
+ .reduce((acc, v) => {
+        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+        return acc;
+    }, {}).NV_OTHERINFO.substr(2)).Sites.CAN.Values.sc)
+ JSON.parse(document.cookie.split(';')
+ .map(v => v.split('='))
+ .reduce((acc, v) => {
+        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+        return acc;
+    }, {}).NV_OTHERINFO.substr(2)).Sites.CAN.Values
+ **/
