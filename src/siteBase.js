@@ -10,10 +10,8 @@ class SiteBase {
 
     async initPage(item) {
         console.log('siteBase.js :: ', 'initPage :: ', 'starting watch for ', item.url);
-
         const page = await this.browser.newPage();
         await page.goto(item.url);
-        // await page.waitForNavigation();
         return page;
     }
 }
