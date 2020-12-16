@@ -1,6 +1,9 @@
 const {SiteBase, Item} = require("./siteBase");
 const secrets = require('../configs');
-const axios = require('axios')
+const axios = require('axios');
+const Sound = require('sound-play');
+const path = require('path')
+
 
 class NewEggAPI extends SiteBase {
     constructor(browser) {
@@ -21,8 +24,8 @@ class NewEggAPI extends SiteBase {
         while (true) {
             for (const item of this.itemsToBuy) {
                 if (await this.getStockInformation(item)) {
-                    console.log('newegg-api.js :: ', item.title, ' :: ', 'item in stock');
-
+                    Sound.play(path.join(__dirname, configs.IN_STOCK_SOUND));
+                    console.log('newegg-api.js :: ', item.title, ' :: ', 'ITEM IN STOCK');
                 } else {
                     console.log('newegg-api.js :: ', item.title, ' :: ', 'item out of stock');
                 }
@@ -69,7 +72,8 @@ class NewEggAPI extends SiteBase {
 
 const configs = {
     NEW_EGG_PRODUCT_REALTIME_API: 'https://www.newegg.ca/product/api/ProductRealtime?ItemNumber=',
-    API_DELAY: 2000
+    API_DELAY: 2000,
+    IN_STOCK_SOUND: '../assets/smb_stage_clear.wav'
 }
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
