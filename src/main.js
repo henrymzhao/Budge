@@ -26,7 +26,7 @@ async function main() {
         for (const site of LOADED_SITES) {
             // try {
                 await site.entry().catch(e=>{
-                    // console.log('main.js :: ', 'main :: ', 'an error was caught, retrying.');
+                    console.log('main.js :: ', 'error :: ', e);
                 });
             // }
             // catch (exception) {
