@@ -1,7 +1,6 @@
 class SiteBase {
-    constructor(siteUrl) {
-        this._siteUrl = siteUrl;
-        this._boughtStatus = false;
+    constructor(browser) {
+        this.browser = browser;
         this.isInitted = false;
     }
 
@@ -9,27 +8,24 @@ class SiteBase {
 
     }
 
-    get boughtStatus() {
-        return this._boughtStatus;
-    }
+    async initPage(item) {
+        console.log('siteBase.js :: ', 'initPage :: ', 'starting watch for ', item.url);
 
-    set boughtStatus(val) {
-        return this._boughtStatus = val;
+        const page = await this.browser.newPage();
+        await page.goto(item.url);
+        // await page.waitForNavigation();
+        return page;
     }
+}
 
-    get page() {
-        return this._pupPage;
-    }
-
-    set page(page) {
-        this._pupPage = page;
-    }
-
-    get siteUrl() {
-        return this._siteUrl;
+class Item {
+    constructor(url) {
+        this.url = url;
+        this.isBought = false;
+        this.page = null;
     }
 }
 
 module.exports = {
-    SiteBase
+    SiteBase, Item
 }
