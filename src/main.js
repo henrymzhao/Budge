@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const BestBuy = require("./bestbuy");
+const NewEggAPI = require("./newegg-api");
 const puppeteer = require('puppeteer-extra')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const NewEgg = require("./newegg");
@@ -16,7 +17,8 @@ async function main() {
         headless: false
     });
     const LOADED_SITES = [
-        new NewEgg(browser),
+        new NewEggAPI(browser)
+        // new NewEgg(browser),
         // new BestBuy()
     ];
 
