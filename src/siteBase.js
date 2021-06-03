@@ -16,6 +16,8 @@ class SiteBase {
     }
 }
 
+const delay = ms => new Promise(res => {setTimeout(res, ms + Math.random()*1000)});
+
 class Item {
     constructor(url) {
         this.url = url;
@@ -25,5 +27,5 @@ class Item {
 }
 
 module.exports = {
-    SiteBase, Item
+    SiteBase, Item, delay
 }

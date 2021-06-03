@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-const BestBuy = require("./bestbuy");
+const {delay} = require("./siteBase");
+// const BestBuy = require("./bestbuy");
 const NewEggAPI = require("./newegg-api");
+const BestBuyAPI = require("./bestbuy-api");
 const puppeteer = require('puppeteer-extra')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 // const NewEgg = require("./newegg");
@@ -9,29 +11,28 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const CONFIGS = {
     MAX_TIME_BETWEEN_SESSIONS: 10000
 }
-const delay = ms => new Promise(res => setTimeout(res, ms));
 
 async function main() {
     puppeteer.use(StealthPlugin());
     const browser = await puppeteer.launch({
-        headless: false
+        headless: true
     });
     const LOADED_SITES = [
         new NewEggAPI(browser),
         // new NewEgg(browser),
-        new BestBuy()
+        new BestBuyAPI(browser)
     ];
 
-    while (true) {
-        await delay(CONFIGS.MAX_TIME_BETWEEN_SESSIONS);
+    // while (true) {
         for (const site of LOADED_SITES) {
             // try {
-                await site.entry();
+            site.entry();
             // }
             // catch (exception) {
             // }
         }
-    }
+        await delay(CONFIGS.MAX_TIME_BETWEEN_SESSIONS);
+    // }
 }
 
 

@@ -25,19 +25,20 @@ class NewEggAPI extends SiteBase {
             for (const item of this.itemsToBuy) {
                 if (await this.getStockInformation(item)) {
                     Sound.play(path.join(__dirname, configs.IN_STOCK_SOUND));
-                    console.log('newegg-api.js :: ', item.url, ' :: ', 'ITEM IN STOCK');
+                    console.log('bestbuy-api.js :: ', item.url, ' :: ', 'ITEM IN STOCK');
                 } else {
-                    console.log('newegg-api.js :: ', item.title, ' :: ', 'item out of stock');
+                    console.log('bestbuy-api.js :: ', item.title, ' :: ', 'item out of stock');
                 }
-                await delay(configs.API_DELAY);
             }
+            await delay(configs.API_DELAY);
         }
     }
 
     async getStockInformation(item) {
         const resp = await this.callAPI(item);
         try {
-            return resp.MainItem.Instock;
+            return resp.availabilities.map(item => item.pickup.purchasable).reduce((x, y) => x || y)
+                || resp.availabilities.map(item => item.shipping.purchasable).reduce((x, y) => x || y)
         } catch {
             console.log('getStockInformation :: ', item.title, ' :: ', 'We being rate limited', configs.NEW_EGG_PRODUCT_REALTIME_API + item.productCode);
             return false;
@@ -47,7 +48,7 @@ class NewEggAPI extends SiteBase {
     async callAPI(item) {
         const response = await axios({
             method: 'get',
-            url: configs.NEW_EGG_PRODUCT_REALTIME_API + item.productCode,
+            url: configs.BESTBUY_REALTIME_API + item.productCode,
             responseType: 'json'
         });
         return response.data;
@@ -55,32 +56,29 @@ class NewEggAPI extends SiteBase {
 
     async init() {
         //    1. Init web pages
-        for (const rawUrl of secrets.NEWEGG.LINKS_TO_BUY) {
+        for (const rawUrl of secrets.BESTBUY.LINKS_TO_BUY) {
             const item = new Item(rawUrl);
             item.productCode = this.extractProductId(item.url);
             item.title = this.extractProductName(item.url);
             // item.page = await this.initPage(item);
+            // this.initPage(item);
             this.itemsToBuy.push(item);
         }
     }
 
     extractProductId(url) {
-        const productCode = url.split('/p/')[1].split('?')[0].slice(7);
-        return [
-            productCode.substr(0, 2),
-            productCode.substr(2, 3),
-            productCode.substr(5, 10)
-        ].join('-');
+        const parts = url.split('/');
+        return parts[parts.length - 1];
     }
 
     extractProductName(url) {
         const parts = url.split('/');
-        return parts[3];
+        return parts[5];
     }
 }
 
 const configs = {
-    NEW_EGG_PRODUCT_REALTIME_API: 'https://www.newegg.ca/product/api/ProductRealtime?ItemNumber=',
+    BESTBUY_REALTIME_API: 'https://www.bestbuy.ca/ecomm-api/availability/products?accept=application%2Fvnd.bestbuy.standardproduct.v1%2Bjson&skus=',
     API_DELAY: 3000,
     IN_STOCK_SOUND: '../assets/smb_stage_clear.wav'
 }
