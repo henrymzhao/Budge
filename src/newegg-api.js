@@ -36,7 +36,12 @@ class NewEggAPI extends SiteBase {
 
     async getStockInformation(item) {
         const resp = await this.callAPI(item);
-        return resp.MainItem.Instock;
+        try {
+            return resp.MainItem.Instock;
+        } catch {
+            console.log('getStockInformation :: ', item.title, ' :: ', 'We being rate limited', configs.NEW_EGG_PRODUCT_REALTIME_API + item.productCode);
+            return false;
+        }
     }
 
     async callAPI(item) {
@@ -53,7 +58,19 @@ class NewEggAPI extends SiteBase {
         for (const rawUrl of secrets.NEWEGG.LINKS_TO_BUY) {
             const item = new Item(rawUrl);
             item.productCode = this.extractProductId(item.url);
-            const webResponse = await this.callAPI(item);
+
+            let webResponse;
+            while (true) {
+                webResponse = await this.callAPI(item);
+                try {
+                    item.title = webResponse.MainItem.Description.IMDescription;
+                    break;
+                } catch {
+                    console.log('newegg-api.js :: ', item.title, ' :: ', 'We being rate limited', configs.NEW_EGG_PRODUCT_REALTIME_API + item.productCode);
+                    await delay(5000);
+                }
+            }
+
             item.title = webResponse.MainItem.Description.IMDescription;
             item.page = await this.initPage(item);
             this.itemsToBuy.push(item);
